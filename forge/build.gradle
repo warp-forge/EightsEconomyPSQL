@@ -6,7 +6,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1+', changing: true
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '6.+', changing: true
         classpath 'gradle.plugin.com.github.jengelman.gradle.plugins:shadow:7.0.0'
         classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.7-SNAPSHOT'
     }
@@ -92,17 +92,13 @@ repositories {
 jarJar.enable()
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    shadow(rootProject)
-    shade(rootProject) {
-        transitive = false
-    }
+    minecraft "net.minecraftforge:forge:${forge_version}"
 
     jarJar(group: 'com.epherical.octo-economy-api', name: 'OctoEconomyApi-forge', version: '[1.0,)') {
         transitive = false
     }
 
-    implementation fg.deobf("com.epherical.octo-economy-api:OctoEconomyApi-forge:1.1.0-1.18.2")
+    implementation fg.deobf("com.epherical.octo-economy-api:OctoEconomyApi-forge:1.2.0-1.20.1")
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
 
@@ -112,8 +108,8 @@ tasks.withType(JavaCompile) {
 }
 
 shadowJar {
-    archiveClassifier = ""
-    enabled = true
+    archiveClassifier.set("")
+    enabled = false
     configurations = [project.configurations.shade]
 }
 
@@ -126,14 +122,20 @@ sourceSets {
     main {
         resources {
             srcDirs += [
-                    "src/main/generated",
-                    rootProject.sourceSets.main.resources
+                    "src/main/generated"
             ]
         }
     }
 }
 
+tasks.named('processResources') {
+    from(rootProject.sourceSets.main.resources) {
+        exclude 'EightsEconomyP-refmap.json'
+    }
+}
+
 jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     manifest {
         attributes([
                 "Specification-Title": "eightsEconomyP",
@@ -151,7 +153,6 @@ jar {
 tasks.build.dependsOn(tasks.shadowJar)
 
 reobf {
-    shadowJar {}
     jarJar {}
 }
 

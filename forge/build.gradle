@@ -37,9 +37,6 @@ minecraft {
             workingDirectory project.file('run')
             property 'legacyClassPath', '{minecraft_classpath}'
             arg "-mixin.config=EightsEconomyP.mixins.json"
-            // Recommended logging data for a userdev environment
-            //property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-            // Recommended logging level for the console //property 'forge.logging.console.level', 'debug'
             args '--mod', 'eights_economy_p', '--all', '--output', file('src/generated/resources/'), '--existing', rootProject.file('src/main/resources/')
             mods {
                 eights_economy_p {
@@ -50,10 +47,6 @@ minecraft {
 
         server {
             workingDirectory project.file('run')
-            // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-            // Recommended logging level for the console
-            property 'forge.logging.console.level', 'debug'
             mods {
                 eights_economy_p {
                     sources(sourceSets.main, rootProject.sourceSets.main)
@@ -64,11 +57,6 @@ minecraft {
         data {
             workingDirectory project.file('run')
             property 'legacyClassPath', '{minecraft_classpath}'
-            // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-            // Recommended logging level for the console
-            property 'forge.logging.console.level', 'debug'
-            // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
             args '--mod', 'eights_economy_p', '--all', '--output', file('src/generated/resources/'), '--existing', rootProject.file('src/main/resources/')
             mods {
                 eights_economy_p {
@@ -81,6 +69,7 @@ minecraft {
 
 processResources {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    exclude 'EightsEconomyP-refmap.json'
 }
 
 tasks.processResources.dependsOn(rootProject.tasks.processResources)
@@ -92,17 +81,21 @@ repositories {
 jarJar.enable()
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${forge_version}"
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    shadow(rootProject)
+    shade(rootProject) {
+        transitive = false
+    }
 
     jarJar(group: 'com.epherical.octo-economy-api', name: 'OctoEconomyApi-forge', version: '[1.0,)') {
         transitive = false
     }
 
-    implementation fg.deobf("com.epherical.octo-economy-api:OctoEconomyApi-forge:1.2.0-1.20.1")
+    implementation fg.deobf("com.epherical.octo-economy-api:OctoEconomyApi-forge:1.1.0-1.18.2")
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
     shade "com.zaxxer:HikariCP:5.0.1"
-    shade "mysql:mysql-connector-j:8.0.33"
+    shade "com.mysql:mysql-connector-j:8.0.33"
 }
 
 tasks.withType(JavaCompile) {
@@ -111,10 +104,11 @@ tasks.withType(JavaCompile) {
 }
 
 shadowJar {
-    archiveClassifier.set("")
-    enabled = false
+    archiveClassifier = "all"
+    enabled = true
     configurations = [project.configurations.shade]
     relocate 'com.zaxxer.hikari', 'com.epherical.eights.lib.hikari'
+    relocate 'com.mysql', 'com.epherical.eights.lib.mysql'
 }
 
 artifacts {
@@ -126,20 +120,14 @@ sourceSets {
     main {
         resources {
             srcDirs += [
-                    "src/main/generated"
+                    "src/main/generated",
+                    rootProject.sourceSets.main.resources
             ]
         }
     }
 }
 
-tasks.named('processResources') {
-    from(rootProject.sourceSets.main.resources) {
-        exclude 'EightsEconomyP-refmap.json'
-    }
-}
-
 jar {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     manifest {
         attributes([
                 "Specification-Title": "eightsEconomyP",
@@ -154,11 +142,15 @@ jar {
     }
 }
 
-tasks.build.dependsOn(tasks.shadowJar)
-
 reobf {
+    shadowJar {}
     jarJar {}
 }
 
 jar.finalizedBy('reobfJar')
 tasks.jarJar.finalizedBy('reobfJarJar')
+
+// Fix implicit dependency issue
+tasks.named('reobfShadowJar') {
+    dependsOn tasks.shadowJar
+}

@@ -15,6 +15,12 @@ public class ConfigConstants {
     public boolean useSaveThread = true;
     public double providedMoneyOnFirstLogin = 0.0D;
 
+    // Storage Settings
+    public String storageType = "JSON"; // JSON or SQL
+    public String databaseUrl = "jdbc:mysql://localhost:3306/minecraft";
+    public String databaseUser = "root";
+    public String databasePassword = "password";
+
 
     public static ConfigConstants getInstance() {
         return INSTANCE;

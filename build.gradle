@@ -39,6 +39,9 @@ dependencies {
     compileOnly group:'org.spongepowered', name:'mixin', version:'0.8.5'
     implementation('com.epherical.octo-economy-api:OctoEconomyApi:1.1.0-1.18.2')
     annotationProcessor('org.jetbrains:annotations:23.0.0')
+
+    implementation 'com.zaxxer:HikariCP:5.0.1'
+    implementation 'mysql:mysql-connector-j:8.0.33'
 }
 
 sourceSets {

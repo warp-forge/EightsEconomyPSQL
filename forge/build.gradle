@@ -104,6 +104,9 @@ dependencies {
 
     implementation fg.deobf("com.epherical.octo-economy-api:OctoEconomyApi-forge:1.1.0-1.18.2")
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+
+    shade "com.zaxxer:HikariCP:5.0.1"
+    shade "mysql:mysql-connector-j:8.0.33"
 }
 
 tasks.withType(JavaCompile) {
@@ -115,6 +118,7 @@ shadowJar {
     archiveClassifier = ""
     enabled = true
     configurations = [project.configurations.shade]
+    relocate 'com.zaxxer.hikari', 'com.epherical.eights.lib.hikari'
 }
 
 artifacts {

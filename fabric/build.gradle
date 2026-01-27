@@ -44,6 +44,11 @@ dependencies {
     modApi "com.epherical.octo-economy-api:OctoEconomyApi-fabric:1.1.0-1.18.2"
 
     testCompileOnly('org.jetbrains:annotations:23.0.0')
+
+    include "com.zaxxer:HikariCP:5.0.1"
+    include "mysql:mysql-connector-j:8.0.33"
+    modImplementation "com.zaxxer:HikariCP:5.0.1"
+    modImplementation "mysql:mysql-connector-j:8.0.33"
 }
 
 processResources {
@@ -113,6 +118,7 @@ jar {
 shadowJar {
     archiveFileName = rootProject.archives_base_name + "-${rootProject.minecraft_version}-FABRIC-dev.jar"
     configurations = [project.configurations.shade]
+    relocate 'com.zaxxer.hikari', 'com.epherical.eights.lib.hikari'
 }
 
 task remappedShadowJar(type: RemapJarTask) {

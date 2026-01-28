@@ -13,7 +13,9 @@ allprojects {
 
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
+}
 
+subprojects {
     repositories {
         mavenCentral()
         maven { url "https://repo.spongepowered.org/repository/maven-public/"}
@@ -40,6 +42,9 @@ dependencies {
     compileOnly group:'org.spongepowered', name:'mixin', version:'0.8.5'
     implementation('com.epherical.octo-economy-api:OctoEconomyApi:1.2.0-1.20.1')
     annotationProcessor('org.jetbrains:annotations:23.0.0')
+
+    implementation 'com.zaxxer:HikariCP:5.0.1'
+    implementation 'com.mysql:mysql-connector-j:8.0.33'
 }
 
 sourceSets {

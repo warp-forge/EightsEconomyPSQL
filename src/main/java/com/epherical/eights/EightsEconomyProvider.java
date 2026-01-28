@@ -44,7 +44,11 @@ public class EightsEconomyProvider implements Economy {
 
     public EightsEconomyProvider(EightsEconMod mod, Path access, List<Currency> currencyList) {
         this.mod = mod;
-        this.data = new EconomyDataFlatFile(this, access);
+        if (ConfigConstants.getInstance().storageType.equalsIgnoreCase("SQL")) {
+            this.data = new com.epherical.eights.data.EconomyDataSQL(this);
+        } else {
+            this.data = new EconomyDataFlatFile(this, access);
+        }
         INSTANCE = this;
         currencyMap.put(currencyName, new BasicCurrency(currencyName));
         for (Currency currency : currencyList) {

@@ -32,6 +32,7 @@ public class EconomyDataSQL extends EconomyData {
         config.setJdbcUrl(ConfigConstants.getInstance().databaseUrl);
         config.setUsername(ConfigConstants.getInstance().databaseUser);
         config.setPassword(ConfigConstants.getInstance().databasePassword);
+        config.setDriverClassName(com.mysql.cj.jdbc.Driver.class.getName());
         config.addDataSourceProperty("cachePrepStmts", "true");
         config.addDataSourceProperty("prepStmtCacheSize", "250");
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");

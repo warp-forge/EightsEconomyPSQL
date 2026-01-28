@@ -45,8 +45,8 @@ dependencies {
 
     testCompileOnly('org.jetbrains:annotations:23.0.0')
 
-    include "com.zaxxer:HikariCP:5.0.1"
-    include "com.mysql:mysql-connector-j:8.0.33"
+    shade "com.zaxxer:HikariCP:5.0.1"
+    shade "com.mysql:mysql-connector-j:8.0.33"
     modImplementation "com.zaxxer:HikariCP:5.0.1"
     modImplementation "com.mysql:mysql-connector-j:8.0.33"
 }
@@ -119,6 +119,8 @@ shadowJar {
     archiveFileName = rootProject.archives_base_name + "-${rootProject.minecraft_version}-FABRIC-dev.jar"
     configurations = [project.configurations.shade]
     relocate 'com.zaxxer.hikari', 'com.epherical.eights.lib.hikari'
+    // relocate 'com.mysql', 'com.epherical.eights.lib.mysql'
+    mergeServiceFiles()
 }
 
 task remappedShadowJar(type: RemapJarTask) {
